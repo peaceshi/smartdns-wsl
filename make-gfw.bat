@@ -1,0 +1,1 @@
+wsl sh ./make-gfwlist.sh -o ../../etc/smartdns/gfwlist.conf
