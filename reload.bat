@@ -1,18 +1,21 @@
 @echo off
-
+set "CURR_PATH=%~dp0"
+set "STARTUP_PATH=%userprofile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
 FOR /F %%i IN ('wsl pwd') DO @set DIR_IN_WSL=%%i
 
-wsl -d ubuntu sudo cp -avf %DIR_IN_WSL%/../../etc/smartdns/* /etc/smartdns/ 
-IF NOT %ERRORLEVEL% == 0 (
-  echo copy smartdns configuration file failed.
-  pause
-  exit 1
-)
+bash "$(wslpath -u "%CURR_PATH%\script\init.sh")"
+IF %ERRORLEVEL% == 0 (
+  wsl sudo cp -avf %DIR_IN_WSL%/../../etc/smartdns/* /etc/smartdns/ 
+  wsl sudo /etc/init.d/smartdns restart
+)^
+ELSE IF %ERRORLEVEL% == 10 (
+  wsl -d ubuntu sudo cp -avf %DIR_IN_WSL%/../../etc/smartdns/* /etc/smartdns/ 
+  wsl -d ubuntu sudo /etc/init.d/smartdns restart
+)^
+ELSE echo error:%ERRORLEVEL%
 
-wsl -d ubuntu sudo /etc/init.d/smartdns restart
 IF NOT %ERRORLEVEL% == 0 (
   echo reload smartdns failed.
-  echo check your smartdns log for more info.
   pause
   exit 1
 )
