@@ -1,3 +1,4 @@
 @echo off
-bash ./make-gfwlist.sh -o ../../../etc/smartdns/gfwlist.conf
+bash ./gfwlist2dnsmasq.sh -o ./gfwlist.conf 
+wsl mv ./*.conf ../../../etc/smartdns/gfwlist.conf
 pause
