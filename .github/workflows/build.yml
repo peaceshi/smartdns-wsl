@@ -19,7 +19,7 @@ jobs:
           wget -c https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list@master/accelerated-domains.china.conf
           sed -i 's/server=/domain-rules /g' ./accelerated-domains.china.conf
           sed -i 's/114.114.114.114/ -nameserver china/g' ./accelerated-domains.china.conf
-          ./script/gfwlist2dnsmasq.sh -o ./gfwlist.conf
+          sudo sh ./script/gfwlist2dnsmasq.sh -o ./gfwlist.conf
           7z a ./release.zip ./*.conf
       - name: Create Release
         id: create_release
