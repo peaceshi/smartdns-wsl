@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install 7zip
-        run: apt-get update && apt-get install -y p7zip-full
+      #- name: Install 7zip
+      #  run: apt-get update && apt-get install -y p7zip-full
       - name: Download files
         run: |
           wget -c https://gitee.com/privacy-protection-tools/anti-ad/raw/master/anti-ad-for-smartdns.conf
