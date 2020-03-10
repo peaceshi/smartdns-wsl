@@ -1,0 +1,43 @@
+name: Auto Release
+on:
+  push:
+    branches:
+      - master
+  schedule:
+  - cron: '0 20 * * *'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install 7zip
+        run: apt-get update && apt-get install -y p7zip-full
+      - name: Download files
+        run: |
+          wget -c https://gitee.com/privacy-protection-tools/anti-ad/raw/master/anti-ad-for-smartdns.conf
+          wget -c https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list@master/accelerated-domains.china.conf
+          sed -i 's/server=/domain-rules /g' ./accelerated-domains.china.conf
+          sed -i 's/114.114.114.114/ -nameserver china/g' ./accelerated-domains.china.conf
+          ./gfwlist2dnsmasq.sh -o ./gfwlist.conf
+          7z a ./release.zip ./*.conf
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          release_name: Auto release 
+          draft: false
+          prerelease: false
+  upload:
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./release.zip
+        asset_name: release.zip
+        asset_content_type: application/zip
